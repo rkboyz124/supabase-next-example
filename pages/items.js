@@ -1,26 +1,24 @@
 import React from 'react';
 import { Card, Typography, Space, IconTrash } from '@supabase/ui';
-import Link from 'next/link';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import Link from 'next/link';
 
 // Only users login can access this
-const Users = ({ profiles }) => (
+const Items = ({ user, items }) => (
   <div style={{ maxWidth: '800px', margin: '96px auto' }}>
     <Card>
       <Space direction="vertical" size={6}>
-        <Typography.Text>Users Table</Typography.Text>
-
-        {profiles?.map((prof) => (
+        {!items?.length && <Typography.Text>No items yet</Typography.Text>}
+        {items?.map((item) => (
           <Card
-            key={prof.id}
+            key={item.id}
             style={{
               color: 'white',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography.Text>{prof.full_name}</Typography.Text>
-              <Typography.Text>{prof.role < 2 ? 'user' : 'admin'}</Typography.Text>
-              {prof.role && <IconTrash />}
+              <Typography.Text>{item.name}</Typography.Text>
+              {user.profile.role === 2 && <IconTrash />}
             </div>
           </Card>
         ))}
@@ -52,26 +50,15 @@ export const getServerSideProps = async (ctx) => {
     .from('profiles')
     .select()
     .eq('id', session?.user?.id);
-
-  if (!session || profile[0].role !== 2) {
-    return {
-      redirect: {
-        destination: '/home',
-        permanent: false,
-      },
-    };
-  }
-
-  const { data: profiles } = await supabase.from('profiles').select();
+  const { data: items } = await supabase.from('item').select();
 
   return {
     props: {
       initialSession: session,
       user: { ...session?.user, profile: profile[0] },
-      profiles,
+      items,
     },
   };
 };
 
-export default Users;
-
+export default Items;

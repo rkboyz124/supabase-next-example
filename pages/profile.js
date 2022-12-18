@@ -1,53 +1,53 @@
 import React from 'react';
-import { Card, Typography, Space, IconTrash } from '@supabase/ui';
-import { supabase } from '../lib/initSupabase';
-import { useRouter } from 'next/router';
+import { Card, Typography, Space } from '@supabase/ui';
 import Link from 'next/link';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
 // Only users login can access this
-const List = ({ profile, items }) => {
-  const router = useRouter();
+const Profile = ({ user }) => (
+  <div style={{ maxWidth: '800px', margin: '96px auto' }}>
+    <Card>
+      <Space direction="vertical" size={6}>
+        <Typography.Text>User Data</Typography.Text>
 
-  const handleLogout = () => {
-    supabase.auth.signOut();
-    router.push('/');
-  };
+        <Typography.Text>
+          <pre>{JSON.stringify(user, null, 2)}</pre>
+        </Typography.Text>
 
-  return (
-    <div style={{ maxWidth: '800px', margin: '96px auto' }}>
-      <Card>
-        <Space direction="vertical" size={6}>
-          <Typography.Text>User Data</Typography.Text>
+        <Typography.Text>
+          <Link href="/">Back to home</Link>
+        </Typography.Text>
+      </Space>
+    </Card>
+  </div>
+);
 
-          <Typography.Text>
-            <pre>{JSON.stringify(profile, null, 2)}</pre>
-          </Typography.Text>
+export const getServerSideProps = async (ctx) => {
+  const supabase = createServerSupabaseClient(ctx);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-          <Typography.Text>
-            <Link href="/">Back to home</Link>
-          </Typography.Text>
-        </Space>
-      </Card>
-    </div>
-  );
-};
-
-export async function getServerSideProps({ req }) {
-  const { user: userCookie } = await supabase.auth.api.getUserByCookie(req);
-
-  if (!userCookie) {
-    // If no user, redirect to index.
-    // Since this is an authenticated route
-    return { props: {}, redirect: { destination: '/', permanent: false } };
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
   }
 
-  // If there is a user, get details
-  const { data: profiles } = await supabase
+  const { data: profile } = await supabase
     .from('profiles')
     .select()
-    .eq('id', userCookie.id);
+    .eq('id', session?.user?.id);
 
-  return { props: { profile: profiles[0] } };
-}
+  return {
+    props: {
+      initialSession: session,
+      user: { ...session?.user, profile: profile[0] },
+    },
+  };
+};
 
-export default List;
+export default Profile;

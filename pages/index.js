@@ -1,43 +1,39 @@
-import Link from 'next/link';
-import useSWR from 'swr';
-import { Auth, Card, Typography, Space, Button, Icon } from '@supabase/ui';
-import { supabase } from '../lib/initSupabase';
+import { Card, Typography, Space } from '@supabase/ui';
+import {
+  Auth,
+  // Import predefined theme
+  ThemeSupa,
+} from '@supabase/auth-ui-react';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
-import { fetchEntity } from './api/fetchEntity';
+import { useRouter } from 'next/router';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
-const Index = () => {
-  const { user, session } = Auth.useUser();
-  const { data, error } = useSWR(
-    session ? ['/api/getUser', session.access_token] : null,
-    fetchEntity({ method: 'get' })
-  );
+const Index = ({ user }) => {
+  const supabaseClient = useSupabaseClient();
+  const router = useRouter();
   const [authView, setAuthView] = useState('sign_in');
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+    if (user) router.push('/home');
+    const { data: authListener } = supabaseClient.auth.onAuthStateChange(
+      (event) => {
         if (event === 'PASSWORD_RECOVERY') setAuthView('update_password');
-        if (event === 'USER_UPDATED')
-          setTimeout(() => setAuthView('sign_in'), 1000);
-        // Send session to /api/auth route to set the auth cookie.
-        // NOTE: this is only needed if you're doing SSR (getServerSideProps)!
-        fetch('/api/auth', {
-          method: 'POST',
-          headers: new Headers({ 'Content-Type': 'application/json' }),
-          credentials: 'same-origin',
-          body: JSON.stringify({ event, session }),
-        }).then((res) => res.json());
-      }
+        if (event === 'USER_UPDATED') { setTimeout(() => setAuthView('sign_in'), 1000); }
+        if (event === 'SIGNED_IN') router.push('/home');
+      },
     );
 
     return () => {
-      authListener.unsubscribe();
+      if (authListener && authListener?.unsubscribe) {
+        authListener?.unsubscribe();
+      }
     };
   }, []);
 
-  const View = () => {
-    if (!user)
-      return (
+  return (
+    <div style={{ maxWidth: '400px', margin: '96px auto' }}>
+      <Card>
         <Space direction="vertical" size={8}>
           <div>
             <img
@@ -49,72 +45,52 @@ const Index = () => {
             </Typography.Title>
           </div>
           <Auth
-            supabaseClient={supabase}
-            onlyThirdPartyProviders={true}
-            providers={['google', 'facebook', 'github', 'twitter']} 
+            redirectTo="http://localhost:3000/home"
+            appearance={{ theme: ThemeSupa }}
+            supabaseClient={supabaseClient}
+            onlyThirdPartyProviders
+            providers={['google', 'facebook', 'github', 'twitter']}
             view={authView}
             socialLayout="vertical"
             socialButtonSize="xlarge"
           />
         </Space>
-      );
-
-    return (
-      <Space direction="vertical" size={6}>
-        {authView === 'update_password' && (
-          <Auth.UpdatePassword supabaseClient={supabase} />
-        )}
-        {user && (
-          <>
-            <Typography.Text>You're signed in</Typography.Text>
-            <Typography.Text strong>Email: {user.email}</Typography.Text>
-
-            <Button
-              icon={<Icon type="LogOut" />}
-              type="outline"
-              onClick={() => supabase.auth.signOut()}
-            >
-              Log out
-            </Button>
-            {error && (
-              <Typography.Text danger>Failed to fetch user!</Typography.Text>
-            )}
-            {data && !error ? (
-              <>
-                <Typography.Text type="success">
-                  User data retrieved server-side (in API route):
-                </Typography.Text>
-
-                <Typography.Text>
-                  <pre>{JSON.stringify(data, null, 2)}</pre>
-                </Typography.Text>
-              </>
-            ) : (
-              <div>Loading...</div>
-            )}
-
-            <Typography.Text>
-              <Link href="/profile">Profile</Link>
-              <br />
-              <Link href="/list">Items List</Link>
-              <br />
-              {data?.profile.role === 2 && 
-              <Link href="/users">Users Panel</Link>
-              }
-            </Typography.Text>
-          </>
-        )}
-      </Space>
-    );
-  };
-
-  return (
-    <div style={{ maxWidth: '800px', margin: '96px auto' }}>
-      <Card>
-        <View />
       </Card>
     </div>
   );
+};
+
+export const getServerSideProps = async (ctx) => {
+  const supabase = createServerSupabaseClient(ctx);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const props = {
+    initialSession: null,
+    user: null,
+  };
+
+  if (session) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select()
+      .eq('id', session?.user?.id);
+
+    props.initialSession = session;
+    props.user = { ...session?.user, profile: profile[0] };
+  }
+
+  if (props.initialSession && props.user) {
+    return {
+      redirect: {
+        destination: '/home',
+        permanent: false,
+      },
+      props,
+    };
+  }
+  return { props };
 };
 
 export default Index;
