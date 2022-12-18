@@ -1,11 +1,26 @@
-import React from 'react';
-import { Card, Typography, Space, IconTrash } from '@supabase/ui';
-import { supabase } from '../lib/initSupabase';
+import React, { useEffect } from 'react';
+import { Card, Typography, Space, IconTrash, Auth } from '@supabase/ui';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import useSWR from 'swr';
+
+import { supabase } from '../lib/initSupabase';
+import { fetchEntity } from './api/fetchEntity';
 
 // Only users login can access this
-const List = ({ profile, items }) => {
+const List = ({ profile }) => {
+  const { user, session } = Auth.useUser();
+  const { data: profiles, error } = useSWR(
+    session ? ['/api/getProfiles', session.access_token] : null,
+    fetchEntity({ method: 'get' })
+  );
+
+  useEffect(() => {
+    if (profile.role < 2) {
+      router.push('/');
+    };
+
+  }, [profile])
   const router = useRouter();
 
   const handleLogout = () => {
@@ -17,17 +32,19 @@ const List = ({ profile, items }) => {
     <div style={{ maxWidth: '800px', margin: '96px auto' }}>
       <Card>
         <Space direction="vertical" size={6}>
-          {!items?.length && <Typography.Text>No items yet</Typography.Text>}
-          {items?.map((item) => (
+          <Typography.Text>Users Table</Typography.Text>
+
+          {profiles?.map((prof) => (
             <Card
-              key={item.id}
+              key={prof.id}
               style={{
                 color: 'white',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography.Text>{item.name}</Typography.Text>
-                {profile.role === 2 && <IconTrash />}
+                <Typography.Text>{prof.full_name}</Typography.Text>
+                <Typography.Text>{profile.role < 2 ? 'user' : 'admin'}</Typography.Text>
+                {prof.role && <IconTrash />}
               </div>
             </Card>
           ))}
@@ -55,10 +72,8 @@ export async function getServerSideProps({ req }) {
     .from('profiles')
     .select()
     .eq('id', userCookie.id);
-
-  const { data: items } = await supabase.from('item').select();
-
-  return { props: { profile: profiles[0], items } };
+  
+  return { props: { profile: profiles[0]} };
 }
 
 export default List;

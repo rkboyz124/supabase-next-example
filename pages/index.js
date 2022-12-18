@@ -3,19 +3,13 @@ import useSWR from 'swr';
 import { Auth, Card, Typography, Space, Button, Icon } from '@supabase/ui';
 import { supabase } from '../lib/initSupabase';
 import { useEffect, useState } from 'react';
-
-const fetcher = (url, token) =>
-  fetch(url, {
-    method: 'GET',
-    headers: new Headers({ 'Content-Type': 'application/json', token }),
-    credentials: 'same-origin',
-  }).then((res) => res.json());
+import { fetchEntity } from './api/fetchEntity';
 
 const Index = () => {
   const { user, session } = Auth.useUser();
   const { data, error } = useSWR(
     session ? ['/api/getUser', session.access_token] : null,
-    fetcher
+    fetchEntity({ method: 'get' })
   );
   const [authView, setAuthView] = useState('sign_in');
 
@@ -57,7 +51,7 @@ const Index = () => {
           <Auth
             supabaseClient={supabase}
             onlyThirdPartyProviders={true}
-            providers={['google', 'github']}
+            providers={['google', 'facebook', 'github', 'twitter']} 
             view={authView}
             socialLayout="vertical"
             socialButtonSize="xlarge"
@@ -100,9 +94,13 @@ const Index = () => {
             )}
 
             <Typography.Text>
-              <Link href="/profile">SSR example with getServerSideProps</Link>
+              <Link href="/profile">Profile</Link>
               <br />
-              <Link href="/list">This is an authenticated route</Link>
+              <Link href="/list">Items List</Link>
+              <br />
+              {data?.profile.role === 2 && 
+              <Link href="/users">Users Panel</Link>
+              }
             </Typography.Text>
           </>
         )}
@@ -111,7 +109,7 @@ const Index = () => {
   };
 
   return (
-    <div style={{ maxWidth: '420px', margin: '96px auto' }}>
+    <div style={{ maxWidth: '800px', margin: '96px auto' }}>
       <Card>
         <View />
       </Card>
