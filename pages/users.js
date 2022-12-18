@@ -43,7 +43,7 @@ const List = ({ profile }) => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography.Text>{prof.full_name}</Typography.Text>
-                <Typography.Text>{profile.role < 2 ? 'user' : 'admin'}</Typography.Text>
+                <Typography.Text>{prof.role < 2 ? 'user' : 'admin'}</Typography.Text>
                 {prof.role && <IconTrash />}
               </div>
             </Card>
