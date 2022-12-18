@@ -35,8 +35,8 @@ const Index = ({ user }) => {
   return (
     <div className="flex flex-col justify-center mt-8">
       <div className="inline-flex self-center">
+        <h1 className="text-2xl font-bold mr-5">Welcome to Booths2Go</h1>
         <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
-        <h1>Welcome to Booths2Go</h1>
       </div>
       <div className="inline-flex self-center">
         <Auth

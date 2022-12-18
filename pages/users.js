@@ -6,9 +6,9 @@ import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 const Users = ({ profiles }) => {
   const renderRow = ({ full_name, role }) => (
     <tr>
-      <td>{full_name}</td>
-      <td>{role}</td>
-      <td>
+      <td className="text-center">{full_name}</td>
+      <td className="text-center">{role < 2 ? 'user' : 'admin'}</td>
+      <td className="text-center">
         <button
           type="submit"
           className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -21,7 +21,7 @@ const Users = ({ profiles }) => {
 
   return (
     <div className="px-8">
-      <h2>Users</h2>
+      <h1 className="text-2xl font-bold">Items</h1>
       <table className="table-auto w-full">
         <thead>
           <tr>

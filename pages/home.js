@@ -1,9 +1,12 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
 const Home = ({ user }) => (
-  <div className="w-full">
-    <div>
-      <h1>Welcome to Booths2Go, {user.profile.full_name}</h1>
+  <div className="w-full px-8">
+    <div className="px-8">
+      <h1 className="text-2xl">
+        Welcome to Booths2Go,{' '}
+        <span className="font-bold">{user.profile.full_name}</span>
+      </h1>
     </div>
   </div>
 );

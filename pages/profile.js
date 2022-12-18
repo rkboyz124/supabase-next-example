@@ -4,10 +4,10 @@ import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 // Only users login can access this
 const Profile = ({ user }) => (
   <div className="px-8">
-    <h3>User Data</h3>
-    <p>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-    </p>
+    <h1 className="text-2xl font-bold">User Data</h1>
+    <pre className="mt-8">
+      <code>{JSON.stringify(user, null, 2)}</code>
+    </pre>
   </div>
 );
 

@@ -5,8 +5,8 @@ import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 const Items = ({ user, items }) => {
   const renderRow = ({ name }) => (
     <tr>
-      <td>{name}</td>
-      <td>
+      <td className="text-center">{name}</td>
+      <td className="text-center">
         <button
           type="submit"
           className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -20,7 +20,7 @@ const Items = ({ user, items }) => {
   //   {!items?.length && <Typography.Text>No items yet</Typography.Text>}
   return (
     <div className="px-8">
-      <h2>Items</h2>
+      <h1 className="text-2xl font-bold">Items</h1>
       <table className="table-auto w-full">
         <thead>
           <tr>

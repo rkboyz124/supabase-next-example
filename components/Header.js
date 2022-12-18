@@ -43,6 +43,10 @@ const Header = ({ user }) => {
     <div className="hidden sm:ml-6 sm:block">
       <div className="flex space-x-4">
         {renderLink({
+          link: '/home',
+          label: 'Home'
+        })}
+        {renderLink({
           link: '/profile',
           label: 'Profile'
         })}
@@ -66,7 +70,10 @@ const Header = ({ user }) => {
   return (
     <div className="w-full p-8">
       <div className="flex-auto w-full flex flex-row place-content-between">
-        <h2>Booths2Go</h2>
+        <div className="flex flex-row">
+          <h2 className="mr-5">Booths2Go</h2>
+          <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
+        </div>
         {user && renderLinks()}
       </div>
     </div>
