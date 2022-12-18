@@ -1,50 +1,53 @@
+/* eslint-disable camelcase */
 import React from 'react';
-import { Card, Typography, Space, IconTrash } from '@supabase/ui';
-import Link from 'next/link';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
 // Only users login can access this
-const Users = ({ profiles }) => (
-  <div style={{ maxWidth: '800px', margin: '96px auto' }}>
-    <Card>
-      <Space direction="vertical" size={6}>
-        <Typography.Text>Users Table</Typography.Text>
+const Users = ({ profiles }) => {
+  const renderRow = ({ full_name, role }) => (
+    <tr>
+      <td>{full_name}</td>
+      <td>{role}</td>
+      <td>
+        <button
+          type="submit"
+          className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  );
 
-        {profiles?.map((prof) => (
-          <Card
-            key={prof.id}
-            style={{
-              color: 'white',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography.Text>{prof.full_name}</Typography.Text>
-              <Typography.Text>{prof.role < 2 ? 'user' : 'admin'}</Typography.Text>
-              {prof.role && <IconTrash />}
-            </div>
-          </Card>
-        ))}
-
-        <Typography.Text>
-          <Link href="/">Back to home</Link>
-        </Typography.Text>
-      </Space>
-    </Card>
-  </div>
-);
+  return (
+    <div className="px-8">
+      <h2>Users</h2>
+      <table className="table-auto w-full">
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>{profiles?.map(renderRow)}</tbody>
+      </table>
+    </div>
+  );
+};
 
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
   const {
-    data: { session },
+    data: { session }
   } = await supabase.auth.getSession();
 
   if (!session) {
     return {
       redirect: {
         destination: '/',
-        permanent: false,
-      },
+        permanent: false
+      }
     };
   }
 
@@ -57,8 +60,8 @@ export const getServerSideProps = async (ctx) => {
     return {
       redirect: {
         destination: '/home',
-        permanent: false,
-      },
+        permanent: false
+      }
     };
   }
 
@@ -68,10 +71,9 @@ export const getServerSideProps = async (ctx) => {
     props: {
       initialSession: session,
       user: { ...session?.user, profile: profile[0] },
-      profiles,
-    },
+      profiles
+    }
   };
 };
 
 export default Users;
-

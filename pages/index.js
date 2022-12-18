@@ -1,8 +1,7 @@
-import { Card, Typography, Space } from '@supabase/ui';
 import {
   Auth,
   // Import predefined theme
-  ThemeSupa,
+  ThemeSupa
 } from '@supabase/auth-ui-react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
@@ -19,9 +18,11 @@ const Index = ({ user }) => {
     const { data: authListener } = supabaseClient.auth.onAuthStateChange(
       (event) => {
         if (event === 'PASSWORD_RECOVERY') setAuthView('update_password');
-        if (event === 'USER_UPDATED') { setTimeout(() => setAuthView('sign_in'), 1000); }
+        if (event === 'USER_UPDATED') {
+          setTimeout(() => setAuthView('sign_in'), 1000);
+        }
         if (event === 'SIGNED_IN') router.push('/home');
-      },
+      }
     );
 
     return () => {
@@ -32,30 +33,23 @@ const Index = ({ user }) => {
   }, []);
 
   return (
-    <div style={{ maxWidth: '400px', margin: '96px auto' }}>
-      <Card>
-        <Space direction="vertical" size={8}>
-          <div>
-            <img
-              src="https://app.supabase.io/img/supabase-dark.svg"
-              width="96"
-            />
-            <Typography.Title level={3}>
-              Welcome to Supabase Auth
-            </Typography.Title>
-          </div>
-          <Auth
-            redirectTo="http://localhost:3000/home"
-            appearance={{ theme: ThemeSupa }}
-            supabaseClient={supabaseClient}
-            onlyThirdPartyProviders
-            providers={['google', 'facebook', 'github', 'twitter']}
-            view={authView}
-            socialLayout="vertical"
-            socialButtonSize="xlarge"
-          />
-        </Space>
-      </Card>
+    <div className="flex flex-col justify-center mt-8">
+      <div className="inline-flex self-center">
+        <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
+        <h1>Welcome to Booths2Go</h1>
+      </div>
+      <div className="inline-flex self-center">
+        <Auth
+          redirectTo="http://localhost:3000/home"
+          appearance={{ theme: ThemeSupa }}
+          supabaseClient={supabaseClient}
+          onlyThirdPartyProviders
+          providers={['google', 'facebook', 'github', 'twitter']}
+          view={authView}
+          socialLayout="vertical"
+          socialButtonSize="xlarge"
+        />
+      </div>
     </div>
   );
 };
@@ -63,12 +57,12 @@ const Index = ({ user }) => {
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
   const {
-    data: { session },
+    data: { session }
   } = await supabase.auth.getSession();
 
   const props = {
     initialSession: null,
-    user: null,
+    user: null
   };
 
   if (session) {
@@ -85,9 +79,9 @@ export const getServerSideProps = async (ctx) => {
     return {
       redirect: {
         destination: '/home',
-        permanent: false,
+        permanent: false
       },
-      props,
+      props
     };
   }
   return { props };

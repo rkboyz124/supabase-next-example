@@ -1,48 +1,51 @@
 import React from 'react';
-import { Card, Typography, Space, IconTrash } from '@supabase/ui';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import Link from 'next/link';
 
 // Only users login can access this
-const Items = ({ user, items }) => (
-  <div style={{ maxWidth: '800px', margin: '96px auto' }}>
-    <Card>
-      <Space direction="vertical" size={6}>
-        {!items?.length && <Typography.Text>No items yet</Typography.Text>}
-        {items?.map((item) => (
-          <Card
-            key={item.id}
-            style={{
-              color: 'white',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography.Text>{item.name}</Typography.Text>
-              {user.profile.role === 2 && <IconTrash />}
-            </div>
-          </Card>
-        ))}
+const Items = ({ user, items }) => {
+  const renderRow = ({ name }) => (
+    <tr>
+      <td>{name}</td>
+      <td>
+        <button
+          type="submit"
+          className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  );
 
-        <Typography.Text>
-          <Link href="/">Back to home</Link>
-        </Typography.Text>
-      </Space>
-    </Card>
-  </div>
-);
+  //   {!items?.length && <Typography.Text>No items yet</Typography.Text>}
+  return (
+    <div className="px-8">
+      <h2>Items</h2>
+      <table className="table-auto w-full">
+        <thead>
+          <tr>
+            <th>Name</th>
+            {user.profile.role === 2 && <th>Action</th>}
+          </tr>
+        </thead>
+        <tbody>{items?.map(renderRow)}</tbody>
+      </table>
+    </div>
+  );
+};
 
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
   const {
-    data: { session },
+    data: { session }
   } = await supabase.auth.getSession();
 
   if (!session) {
     return {
       redirect: {
         destination: '/',
-        permanent: false,
-      },
+        permanent: false
+      }
     };
   }
 
@@ -56,8 +59,8 @@ export const getServerSideProps = async (ctx) => {
     props: {
       initialSession: session,
       user: { ...session?.user, profile: profile[0] },
-      items,
-    },
+      items
+    }
   };
 };
 
