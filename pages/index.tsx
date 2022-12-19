@@ -15,23 +15,17 @@ const Index = ({ user }) => {
 
   useEffect(() => {
     if (user) router.push('/home');
-    const { data: authListener } = supabaseClient.auth.onAuthStateChange(
+    supabaseClient.auth.onAuthStateChange(
       (event) => {
         if (event === 'SIGNED_IN') router.push('/home');
       }
     );
-
-    return () => {
-      if (authListener && authListener?.unsubscribe) {
-        authListener?.unsubscribe();
-      }
-    };
   }, []);
 
   return (
     <div className="flex flex-col justify-center mt-8">
       <div className="inline-flex self-center">
-        <h1 className="text-2xl font-bold mr-5">Welcome to Booths2Go</h1>
+        <h1 className="text-5xl font-bold mr-5">Welcome to Booths2Go</h1>
         <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
       </div>
       <div className="inline-flex self-center">
@@ -43,7 +37,6 @@ const Index = ({ user }) => {
           providers={['google', 'facebook', 'github', 'twitter']}
           view="sign_in"
           socialLayout="vertical"
-          socialButtonSize="xlarge"
         />
       </div>
     </div>

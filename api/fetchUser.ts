@@ -1,9 +1,24 @@
+import { SupabaseClient } from "@supabase/supabase-js";
+
+type TResult = {
+  props: {},
+  redirect?: {},
+};
+
+type FetchUserType = {
+  supabase: SupabaseClient;
+  shouldRedirect?: boolean;
+  additionalProps?: object;
+  redirect?: object;
+
+}
+
 const fetchUser = async ({
   supabase,
   shouldRedirect = true,
   additionalProps,
   redirect
-}) => {
+}: FetchUserType) => {
   const {
     data: { session }
   } = await supabase.auth.getSession();
@@ -31,7 +46,7 @@ const fetchUser = async ({
     .select()
     .eq('id', session?.user?.id);
 
-  const result = {
+  const result: TResult = {
     props: {
       ...additionalProps,
       initialSession: session,
