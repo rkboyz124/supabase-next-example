@@ -1,13 +1,11 @@
-/* eslint-disable camelcase */
 import React from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
 // Only users login can access this
-const Users = ({ profiles }) => {
-  const renderRow = ({ full_name, role }) => (
+const Items = ({ user, items }) => {
+  const renderRow = ({ name }) => (
     <tr>
-      <td className="text-center">{full_name}</td>
-      <td className="text-center">{role < 2 ? 'user' : 'admin'}</td>
+      <td className="text-center">{name}</td>
       <td className="text-center">
         <button
           type="submit"
@@ -19,18 +17,18 @@ const Users = ({ profiles }) => {
     </tr>
   );
 
+  //   {!items?.length && <Typography.Text>No items yet</Typography.Text>}
   return (
     <div className="px-8">
       <h1 className="text-2xl font-bold">Items</h1>
       <table className="table-auto w-full">
         <thead>
           <tr>
-            <th>Full Name</th>
-            <th>Role</th>
-            <th>Action</th>
+            <th>Name</th>
+            {user.profile.role === 2 && <th>Action</th>}
           </tr>
         </thead>
-        <tbody>{profiles?.map(renderRow)}</tbody>
+        <tbody>{items?.map(renderRow)}</tbody>
       </table>
     </div>
   );
@@ -55,25 +53,15 @@ export const getServerSideProps = async (ctx) => {
     .from('profiles')
     .select()
     .eq('id', session?.user?.id);
-
-  if (!session || profile[0].role !== 2) {
-    return {
-      redirect: {
-        destination: '/home',
-        permanent: false
-      }
-    };
-  }
-
-  const { data: profiles } = await supabase.from('profiles').select();
+  const { data: items } = await supabase.from('item').select();
 
   return {
     props: {
       initialSession: session,
       user: { ...session?.user, profile: profile[0] },
-      profiles
+      items
     }
   };
 };
 
-export default Users;
+export default Items;

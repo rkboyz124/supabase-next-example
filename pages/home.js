@@ -1,13 +1,13 @@
-import React from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
-// Only users login can access this
-const Profile = ({ user }) => (
-  <div className="px-8">
-    <h1 className="text-2xl font-bold">User Data</h1>
-    <pre className="mt-8">
-      <code>{JSON.stringify(user, null, 2)}</code>
-    </pre>
+const Home = ({ user }) => (
+  <div className="w-full px-8">
+    <div className="px-8">
+      <h1 className="text-2xl">
+        Welcome to Booths2Go,{' '}
+        <span className="font-bold">{user.profile.full_name}</span>
+      </h1>
+    </div>
   </div>
 );
 
@@ -39,4 +39,4 @@ export const getServerSideProps = async (ctx) => {
   };
 };
 
-export default Profile;
+export default Home;
