@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import fetchUser from '../api/fetchUser';
 
 const Home = ({ user }) => (
   <div className="w-full px-8">
@@ -13,30 +14,9 @@ const Home = ({ user }) => (
 
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
-  const {
-    data: { session }
-  } = await supabase.auth.getSession();
+  const result = await fetchUser({ supabase });
 
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false
-      }
-    };
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select()
-    .eq('id', session?.user?.id);
-
-  return {
-    props: {
-      initialSession: session,
-      user: { ...session?.user, profile: profile[0] }
-    }
-  };
+  return result;
 };
 
 export default Home;

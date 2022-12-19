@@ -1,11 +1,12 @@
 /* eslint-disable camelcase */
 import React from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import fetchUser from '../api/fetchUser';
 
 // Only users login can access this
 const Users = ({ profiles }) => {
-  const renderRow = ({ full_name, role }) => (
-    <tr>
+  const renderRow = ({ full_name, role, id }) => (
+    <tr key={id}>
       <td className="text-center">{full_name}</td>
       <td className="text-center">{role < 2 ? 'user' : 'admin'}</td>
       <td className="text-center">
@@ -21,7 +22,7 @@ const Users = ({ profiles }) => {
 
   return (
     <div className="px-8">
-      <h1 className="text-2xl font-bold">Items</h1>
+      <h1 className="text-2xl font-bold">User List</h1>
       <table className="table-auto w-full">
         <thead>
           <tr>
@@ -38,25 +39,12 @@ const Users = ({ profiles }) => {
 
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
-  const {
-    data: { session }
-  } = await supabase.auth.getSession();
+  const result = await fetchUser({ supabase });
 
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false
-      }
-    };
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select()
-    .eq('id', session?.user?.id);
-
-  if (!session || profile[0].role !== 2) {
+  if (
+    !result?.props?.initialSession ||
+    result?.props?.user.profile.role !== 2
+  ) {
     return {
       redirect: {
         destination: '/home',
@@ -67,10 +55,16 @@ export const getServerSideProps = async (ctx) => {
 
   const { data: profiles } = await supabase.from('profiles').select();
 
+  if (result.redirect) {
+    return {
+      redirect: result.redirect
+    };
+  }
+
   return {
+    ...result,
     props: {
-      initialSession: session,
-      user: { ...session?.user, profile: profile[0] },
+      ...result.props,
       profiles
     }
   };
