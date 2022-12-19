@@ -25,7 +25,7 @@ const Home = ({ user }) => (
   </div>
 );
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
   const result = await fetchUser({ supabase });
 

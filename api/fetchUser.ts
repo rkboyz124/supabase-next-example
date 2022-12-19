@@ -1,16 +1,16 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-
-type TResult = {
-  props: {},
-  redirect?: {},
-};
+import { TUserData } from "../utils/UserType";
 
 type FetchUserType = {
   supabase: SupabaseClient;
   shouldRedirect?: boolean;
   additionalProps?: object;
   redirect?: object;
+}
 
+export type TResult = {
+  redirect?: object;
+  props?: TUserData
 }
 
 const fetchUser = async ({
@@ -34,6 +34,7 @@ const fetchUser = async ({
     } else {
       return {
         props: {
+          ...additionalProps,
           initialSession: null,
           user: null
         }

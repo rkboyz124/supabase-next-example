@@ -7,14 +7,16 @@ const Items = ({ user, items }) => {
   const renderRow = ({ name }) => (
     <tr key={name}>
       <td className="text-center">{name}</td>
-      <td className="text-center">
-        <button
-          type="submit"
-          className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-        >
-          Delete
-        </button>
-      </td>
+      {user && (
+        <td className="text-center">
+          <button
+            type="submit"
+            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Delete
+          </button>
+        </td>
+      )}
     </tr>
   );
 
@@ -26,7 +28,7 @@ const Items = ({ user, items }) => {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Action</th>
+            {user && <th>Action</th>}
           </tr>
         </thead>
         <tbody>{items?.map(renderRow)}</tbody>
@@ -38,7 +40,11 @@ const Items = ({ user, items }) => {
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
   const { data: items } = await supabase.from('item').select();
-  const result = await fetchUser({ supabase, additionalProps: { items } });
+  const result = await fetchUser({
+    supabase,
+    shouldRedirect: false,
+    additionalProps: { items }
+  });
   return result;
 };
 
