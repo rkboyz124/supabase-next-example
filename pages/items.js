@@ -1,10 +1,11 @@
 import React from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import fetchUser from '../api/fetchUser';
 
 // Only users login can access this
 const Items = ({ user, items }) => {
   const renderRow = ({ name }) => (
-    <tr>
+    <tr key={name}>
       <td className="text-center">{name}</td>
       <td className="text-center">
         <button
@@ -25,7 +26,7 @@ const Items = ({ user, items }) => {
         <thead>
           <tr>
             <th>Name</th>
-            {user.profile.role === 2 && <th>Action</th>}
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>{items?.map(renderRow)}</tbody>
@@ -36,32 +37,9 @@ const Items = ({ user, items }) => {
 
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
-  const {
-    data: { session }
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false
-      }
-    };
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select()
-    .eq('id', session?.user?.id);
   const { data: items } = await supabase.from('item').select();
-
-  return {
-    props: {
-      initialSession: session,
-      user: { ...session?.user, profile: profile[0] },
-      items
-    }
-  };
+  const result = await fetchUser({ supabase, additionalProps: { items } });
+  return result;
 };
 
 export default Items;
