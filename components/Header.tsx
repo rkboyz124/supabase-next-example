@@ -16,7 +16,7 @@ const Header = ({ user }) => {
   const renderLink = ({ link, label }) => (
     <Link
       href={link}
-      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+      className="text-gray-500 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
       key={link}
     >
       {label}
@@ -42,7 +42,7 @@ const Header = ({ user }) => {
           renderLink({ link: '/users', label: 'Users Panel' })}
         <button
           type="submit"
-          className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          className="text-gray-500 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
           onClick={handleLogout}
         >
           Logout
@@ -55,7 +55,7 @@ const Header = ({ user }) => {
     <div className="w-full p-8">
       <div className="flex-auto w-full flex flex-row place-content-between">
         <div className="flex flex-row">
-          <h2 className="mr-5">Booths2Go</h2>
+          <h2 className="mr-5 text-2xl">Booths2Go</h2>
           <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
         </div>
         {user && renderLinks()}
