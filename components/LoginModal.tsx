@@ -6,11 +6,18 @@ import {
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Modal } from '@supabase/ui';
+import Modal from './Modal';
 
-const LoginModal = ({
+interface IProps {
+  open: boolean;
+  setOpen?: () => void;
+  setLoginSuccess: (v: boolean) => void;
+}
+
+const LoginModal: React.FC<IProps> = ({
   // user
-
+  open,
+  setOpen,
   setLoginSuccess
 }) => {
   const supabaseClient = useSupabaseClient();
@@ -27,7 +34,7 @@ const LoginModal = ({
   }, []);
 
   return (
-    <Modal visible hideFooter>
+    <Modal open={open} setOpen={setOpen} withFooter={false}>
       <div className="inline-flex self-center">
         <h1 className="text-2xl font-bold mr-5">Welcome to Booths2Go</h1>
         <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />

@@ -26,7 +26,7 @@ const Users = ({ profiles, triggerLogin }) => {
     <div className="px-8">
       {!loginSuccess ? (
         <>
-          <LoginModal setLoginSuccess={setLoginSuccess} />
+          <LoginModal setLoginSuccess={setLoginSuccess} open={true} />
         </>
       ) : (
         <>
