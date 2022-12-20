@@ -1,61 +1,50 @@
-import {
-  Auth,
-  // Import predefined theme
-  ThemeSupa
-} from '@supabase/auth-ui-react';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import fetchUser from '../api/fetchUser';
 
-const Index = ({ user }) => {
-  const supabaseClient = useSupabaseClient();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user) router.push('/home');
-    supabaseClient.auth.onAuthStateChange(
-      (event) => {
-        if (event === 'SIGNED_IN') router.push('/home');
-      }
-    );
-  }, []);
+// Only users login can access this
+const Items = ({ user, items }) => {
+  const renderRow = ({ name }) => (
+    <tr key={name}>
+      <td className="text-center">{name}</td>
+      {user && (
+        <td className="text-center">
+          <button
+            type="submit"
+            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Delete
+          </button>
+        </td>
+      )}
+    </tr>
+  );
 
   return (
-    <div className="flex flex-col justify-center mt-8">
-      <div className="inline-flex self-center">
-        <h1 className="text-5xl font-bold mr-5">Welcome to Booths2Go</h1>
-        <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
-      </div>
-      <div className="inline-flex self-center">
-        <Auth
-          redirectTo="http://localhost:3000/home"
-          appearance={{ theme: ThemeSupa }}
-          supabaseClient={supabaseClient}
-          onlyThirdPartyProviders
-          providers={['google', 'facebook', 'github', 'twitter']}
-          view="sign_in"
-          socialLayout="vertical"
-        />
-      </div>
+    <div className="px-8">
+      <h1 className="text-2xl font-bold">Items</h1>
+      <table className="table-auto w-full">
+        <thead>
+          <tr>
+            <th>Name</th>
+            {user && <th>Action</th>}
+          </tr>
+        </thead>
+        <tbody>{items?.map(renderRow)}</tbody>
+      </table>
     </div>
   );
 };
 
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
-
+  const { data: items } = await supabase.from('item').select();
   const result = await fetchUser({
     supabase,
     shouldRedirect: false,
-    redirect: {
-      destination: '/home',
-      permanent: false
-    }
+    additionalProps: { items }
   });
-
   return result;
 };
 
-export default Index;
+export default Items;

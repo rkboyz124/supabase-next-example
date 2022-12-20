@@ -1,10 +1,13 @@
 /* eslint-disable camelcase */
-import React from 'react';
+import React, { useState } from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import fetchUser, { TResult } from '../api/fetchUser';
+import LoginModal from '../components/LoginModal';
 
 // Only users login can access this
-const Users = ({ profiles }) => {
+const Users = ({ profiles, triggerLogin }) => {
+  const [open, setOpen] = useState(triggerLogin);
+  const [loginSuccess, setLoginSuccess] = useState(false);
   const renderRow = ({ full_name, role, id }) => (
     <tr key={id}>
       <td className="text-center">{full_name}</td>
@@ -22,17 +25,25 @@ const Users = ({ profiles }) => {
 
   return (
     <div className="px-8">
-      <h1 className="text-2xl font-bold">User List</h1>
-      <table className="table-auto w-full">
-        <thead>
-          <tr>
-            <th>Full Name</th>
-            <th>Role</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>{profiles?.map(renderRow)}</tbody>
-      </table>
+      {!loginSuccess ? (
+        <>
+          <LoginModal setLoginSuccess={setLoginSuccess} />
+        </>
+      ) : (
+        <>
+          <h1 className="text-2xl font-bold">User List</h1>
+          <table className="table-auto w-full">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Role</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>{profiles?.map(renderRow)}</tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 };
@@ -46,9 +57,12 @@ export const getServerSideProps = async (ctx) => {
     result?.props?.user.profile.role !== 2
   ) {
     return {
-      redirect: {
-        destination: '/home',
-        permanent: false
+      // redirect: {
+      //   destination: '/home',
+      //   permanent: false
+      // }
+      props: {
+        triggerLogin: true
       }
     };
   }
@@ -57,7 +71,10 @@ export const getServerSideProps = async (ctx) => {
 
   if (result.redirect) {
     return {
-      redirect: result.redirect
+      // redirect: result.redirect
+      props: {
+        triggerLogin: true
+      }
     };
   }
 
