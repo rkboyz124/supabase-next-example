@@ -6,8 +6,7 @@ import LoginModal from '../components/LoginModal';
 
 // Only users login can access this
 const Users = ({ profiles, triggerLogin }) => {
-  const [open, setOpen] = useState(triggerLogin);
-  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(!triggerLogin);
   const renderRow = ({ full_name, role, id }) => (
     <tr key={id}>
       <td className="text-center">{full_name}</td>
