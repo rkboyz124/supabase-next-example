@@ -15,11 +15,9 @@ const Index = ({ user }) => {
 
   useEffect(() => {
     if (user) router.push('/home');
-    supabaseClient.auth.onAuthStateChange(
-      (event) => {
-        if (event === 'SIGNED_IN') router.push('/home');
-      }
-    );
+    supabaseClient.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') router.push('/home');
+    });
   }, []);
 
   return (
@@ -33,10 +31,10 @@ const Index = ({ user }) => {
           redirectTo="http://localhost:3000/home"
           appearance={{ theme: ThemeSupa }}
           supabaseClient={supabaseClient}
-          onlyThirdPartyProviders
           providers={['google', 'facebook', 'github', 'twitter']}
           view="sign_in"
           socialLayout="vertical"
+          magicLink
         />
       </div>
     </div>
