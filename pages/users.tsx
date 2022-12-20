@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import React from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import fetchUser from '../api/fetchUser';
+import fetchUser, { TResult } from '../api/fetchUser';
 
 // Only users login can access this
 const Users = ({ profiles }) => {
@@ -39,7 +39,7 @@ const Users = ({ profiles }) => {
 
 export const getServerSideProps = async (ctx) => {
   const supabase = createServerSupabaseClient(ctx);
-  const result = await fetchUser({ supabase });
+  const result: TResult = await fetchUser({ supabase });
 
   if (
     !result?.props?.initialSession ||

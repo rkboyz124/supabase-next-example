@@ -30,23 +30,27 @@ const Header = ({ user }) => {
           link: '/home',
           label: 'Home'
         })}
-        {renderLink({
-          link: '/profile',
-          label: 'Profile'
-        })}
+
         {renderLink({
           link: '/items',
           label: 'Items List'
         })}
-        {user.profile.role === 2 &&
+        {user &&
+          renderLink({
+            link: '/profile',
+            label: 'Profile'
+          })}
+        {user?.profile?.role === 2 &&
           renderLink({ link: '/users', label: 'Users Panel' })}
-        <button
-          type="submit"
-          className="text-gray-500 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+        {user && (
+          <button
+            type="submit"
+            className="text-gray-500 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        )}
       </div>
     </div>
   );
@@ -58,7 +62,7 @@ const Header = ({ user }) => {
           <h2 className="mr-5 text-2xl">Booths2Go</h2>
           <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
         </div>
-        {user && renderLinks()}
+        {renderLinks()}
       </div>
     </div>
   );
