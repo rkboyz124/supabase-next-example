@@ -37,10 +37,10 @@ const LoginModal = ({
           redirectTo={`http://localhost:3000${router.pathname}`}
           appearance={{ theme: ThemeSupa }}
           supabaseClient={supabaseClient}
-          onlyThirdPartyProviders
           providers={['google', 'facebook', 'github', 'twitter']}
           view="sign_in"
           socialLayout="vertical"
+          magicLink
         />
       </div>
     </Modal>
