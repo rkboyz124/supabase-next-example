@@ -40,8 +40,7 @@ const Header = ({ user }) => {
             link: '/profile',
             label: 'Profile'
           })}
-        {user?.profile?.role === 2 &&
-          renderLink({ link: '/users', label: 'Users Panel' })}
+        {renderLink({ link: '/users', label: 'Users Panel' })}
         {user && (
           <button
             type="submit"
