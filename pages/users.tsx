@@ -6,6 +6,7 @@ import LoginModal from '../components/LoginModal';
 
 // Only users login can access this
 const Users = ({ profiles, triggerLogin }) => {
+  const [open, setOpen] = useState<boolean>(true);
   const [loginSuccess, setLoginSuccess] = useState(!triggerLogin);
   const renderRow = ({ full_name, role, id }) => (
     <tr key={id}>
@@ -26,7 +27,11 @@ const Users = ({ profiles, triggerLogin }) => {
     <div className="px-8">
       {!loginSuccess ? (
         <>
-          <LoginModal setLoginSuccess={setLoginSuccess} open={true} />
+          <LoginModal
+            setLoginSuccess={setLoginSuccess}
+            open={open}
+            setOpen={setOpen}
+          />
         </>
       ) : (
         <>
