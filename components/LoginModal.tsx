@@ -10,7 +10,7 @@ import Modal from './Modal';
 
 interface IProps {
   open: boolean;
-  setOpen?: () => void;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   setLoginSuccess: (v: boolean) => void;
 }
 
