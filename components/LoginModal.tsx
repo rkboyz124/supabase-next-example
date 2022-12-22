@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Auth,
   // Import predefined theme

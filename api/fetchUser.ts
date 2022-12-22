@@ -37,21 +37,25 @@ const fetchUser = async ({
           ...additionalProps,
           initialSession: null,
           user: null
-        }
+        },
+        redirect: null
       };
     }
   }
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from('profiles')
     .select()
-    .eq('id', session?.user?.id);
+    .eq('id', session?.user?.id)
+    .single();
+
+  
 
   const result: TResult = {
     props: {
       ...additionalProps,
       initialSession: session,
-      user: { ...session?.user, profile: profile[0] }
+      user: { ...session?.user, profile: data.length > 0 ? data[0] : {} }
     }
   };
 

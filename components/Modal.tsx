@@ -17,6 +17,14 @@ const Modal: React.FC<IProps> = ({
   width,
   children
 }) => {
+  const handleConfirm = () => {
+    if (onConfirm) onConfirm();
+  };
+
+  const handleOpen = (val: boolean) => {
+    if (setOpen) setOpen(val);
+  };
+
   return (
     <>
       {open ? (
@@ -25,7 +33,7 @@ const Modal: React.FC<IProps> = ({
             className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none "
             style={{ backgroundColor: '#00000059' }}
             onClick={(e) => {
-              setOpen && setOpen(false);
+              handleOpen(false);
             }}
           >
             <div
@@ -37,7 +45,7 @@ const Modal: React.FC<IProps> = ({
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <button
                   className="bg-transparent border-0 text-black absolute top-5 right-6 z-40 "
-                  onClick={() => setOpen(false)}
+                  onClick={() => handleOpen(false)}
                 >
                   &#x2715;
                 </button>
@@ -47,14 +55,14 @@ const Modal: React.FC<IProps> = ({
                     <button
                       className="text-red-500 background-transparent uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
                       type="button"
-                      onClick={() => setOpen(false)}
+                      onClick={() => handleOpen(false)}
                     >
                       Close
                     </button>
                     <button
                       className="text-white bg-green-500 active:bg-green-700 uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                       type="button"
-                      onClick={() => onConfirm()}
+                      onClick={() => handleConfirm()}
                     >
                       Submit
                     </button>

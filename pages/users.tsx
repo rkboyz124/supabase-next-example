@@ -1,17 +1,25 @@
 /* eslint-disable camelcase */
 import React, { useState } from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { GetServerSidePropsContext } from 'next';
 import fetchUser, { TResult } from '../api/fetchUser';
 import LoginModal from '../components/LoginModal';
+import { TProfile } from '../types/IProfile';
 
 // Only users login can access this
-const Users = ({ profiles, triggerLogin }) => {
+const Users = ({
+  profiles,
+  triggerLogin
+}: {
+  profiles: TProfile[];
+  triggerLogin: boolean;
+}) => {
   const [open, setOpen] = useState<boolean>(true);
   const [loginSuccess, setLoginSuccess] = useState(!triggerLogin);
-  const renderRow = ({ full_name, role, id }) => (
+  const renderRow = ({ full_name, role, id }: TProfile) => (
     <tr key={id}>
       <td className="text-center">{full_name}</td>
-      <td className="text-center">{role < 2 ? 'user' : 'admin'}</td>
+      <td className="text-center">{role && role < 2 ? 'user' : 'admin'}</td>
       <td className="text-center">
         <button
           type="submit"
@@ -52,13 +60,13 @@ const Users = ({ profiles, triggerLogin }) => {
   );
 };
 
-export const getServerSideProps = async (ctx) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const supabase = createServerSupabaseClient(ctx);
-  const result: TResult = await fetchUser({ supabase });
+  const result = await fetchUser({ supabase });
 
   if (
     !result?.props?.initialSession ||
-    result?.props?.user.profile.role !== 2
+    result?.props?.user?.profile.role !== 2
   ) {
     return {
       // redirect: {
@@ -73,7 +81,7 @@ export const getServerSideProps = async (ctx) => {
 
   const { data: profiles } = await supabase.from('profiles').select();
 
-  if (result.redirect) {
+  if (result?.redirect) {
     return {
       // redirect: result.redirect
       props: {
