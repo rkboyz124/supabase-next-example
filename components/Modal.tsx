@@ -37,7 +37,7 @@ const Modal: React.FC<IProps> = ({
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <button
                   className="bg-transparent border-0 text-black absolute top-5 right-6 z-40 "
-                  onClick={() => setOpen(false)}
+                  onClick={() => setOpen && setOpen(false)}
                 >
                   &#x2715;
                 </button>
@@ -47,14 +47,14 @@ const Modal: React.FC<IProps> = ({
                     <button
                       className="text-red-500 background-transparent uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
                       type="button"
-                      onClick={() => setOpen(false)}
+                      onClick={() => setOpen && setOpen(false)}
                     >
                       Close
                     </button>
                     <button
                       className="text-white bg-green-500 active:bg-green-700 uppercase text-sm px-6 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                       type="button"
-                      onClick={() => onConfirm()}
+                      onClick={() => onConfirm && onConfirm()}
                     >
                       Submit
                     </button>

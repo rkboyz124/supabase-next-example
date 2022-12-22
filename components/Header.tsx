@@ -3,8 +3,14 @@
 import Link from 'next/link';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/navigation';
+import { TUserWithProfile } from '../utils/UserType';
+import { HTMLProps } from 'react';
 
-const Header = ({ user }) => {
+interface IProps {
+  user: TUserWithProfile;
+}
+
+const Header: React.FC<IProps> = ({ user }) => {
   const supabaseClient = useSupabaseClient();
   const router = useRouter();
 
@@ -13,7 +19,11 @@ const Header = ({ user }) => {
     router.push('/');
   };
 
-  const renderLink = ({ link, label }) => (
+  const renderLink: React.FC<
+    { link: any } & Omit<HTMLProps<HTMLAnchorElement>, 'href'> & {
+        href?: string;
+      }
+  > = ({ link, label }) => (
     <Link
       href={link}
       className="text-gray-500 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
