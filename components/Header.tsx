@@ -1,10 +1,11 @@
 'use client';
-
+import React from 'react';
 import Link from 'next/link';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/navigation';
+import { IUser } from '../types/IProfile';
 
-const Header = ({ user }) => {
+const Header = ({ user }: { user: IUser }) => {
   const supabaseClient = useSupabaseClient();
   const router = useRouter();
 
@@ -13,8 +14,9 @@ const Header = ({ user }) => {
     router.push('/');
   };
 
-  const renderLink = ({ link, label }) => (
+  const renderLink = ({ link, label }: { link: string; label: string }) => (
     <Link
+      // @ts-ignore
       href={link}
       className="text-gray-500 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
       key={link}

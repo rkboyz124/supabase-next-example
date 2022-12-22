@@ -1,10 +1,13 @@
 import React from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { GetServerSidePropsContext } from 'next';
 import fetchUser from '../api/fetchUser';
+import { IUser } from '../types/IProfile';
+import { TItems } from '../types/IItems';
 
 // Only users login can access this
-const Items = ({ user, items }) => {
-  const renderRow = ({ name }) => (
+const Items = ({ user, items }: { user: IUser; items: TItems[] }) => {
+  const renderRow = ({ name }: TItems) => (
     <tr key={name}>
       <td className="text-center">{name}</td>
       {user && (
@@ -36,8 +39,10 @@ const Items = ({ user, items }) => {
   );
 };
 
-export const getServerSideProps = async (ctx) => {
-  const supabase = createServerSupabaseClient(ctx);
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const supabase = createServerSupabaseClient(context);
   const { data: items } = await supabase.from('item').select();
   const result = await fetchUser({
     supabase,
